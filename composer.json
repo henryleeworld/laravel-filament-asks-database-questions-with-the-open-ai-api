@@ -16,12 +16,12 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
-        "laravel/pint": "^1.14",
-        "laravel/sail": "^1.28",
-        "mockery/mockery": "^1.6.7",
+        "laravel/pint": "^1.15",
+        "laravel/sail": "^1.29",
+        "mockery/mockery": "^1.6.11",
         "nunomaduro/collision": "^7.10",
         "phpunit/phpunit": "^10.5",
-        "spatie/laravel-ignition": "^2.4"
+        "spatie/laravel-ignition": "^2.5"
     },
     "autoload": {
         "psr-4": {
