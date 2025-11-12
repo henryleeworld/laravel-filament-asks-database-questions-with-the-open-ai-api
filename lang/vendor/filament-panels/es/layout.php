@@ -52,4 +52,21 @@ return [
 
     ],
 
+    'avatar' => [
+        'alt' => 'Avatar of :name',
+    ],
+
+    'logo' => [
+        'alt' => ':name logo',
+    ],
+
+    'tenant_menu' => [
+
+        'search_field' => [
+            'label' => 'Buscar inquilino',
+            'placeholder' => 'Buscar',
+        ],
+
+    ],
+
 ];

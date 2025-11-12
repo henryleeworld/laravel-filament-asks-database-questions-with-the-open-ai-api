@@ -1,4 +1,4 @@
-# Laravel 10 Filament 透過 OpenAI 應用程式介面查詢資料庫問題
+# Laravel 12 Filament 透過 OpenAI 應用程式介面查詢資料庫問題
 
 Filament 透過 OpenAI 應用程式介面查詢資料庫問題採用快速建立簡捷的 TALL（Tailwind CSS、Alpine.js、Laravel 和 Livewire）堆疊應用程式的工具組，讓用戶使用自然語言，詢問資料庫資料的相關問題，即時地獲得答案。
 

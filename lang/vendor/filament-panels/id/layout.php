@@ -52,4 +52,21 @@ return [
 
     ],
 
+    'avatar' => [
+        'alt' => 'Avatar :name',
+    ],
+
+    'logo' => [
+        'alt' => 'Logo :name',
+    ],
+
+    'tenant_menu' => [
+
+        'search_field' => [
+            'label' => 'Pencarian tenant',
+            'placeholder' => 'Cari',
+        ],
+
+    ],
+
 ];

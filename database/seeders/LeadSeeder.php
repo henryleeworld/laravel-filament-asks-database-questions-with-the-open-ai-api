@@ -7,7 +7,10 @@ use Illuminate\Database\Seeder;
 
 class LeadSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeders.
+     */
+    public function run(): void
     {
         $salesReps = [
             'Garry Smith',

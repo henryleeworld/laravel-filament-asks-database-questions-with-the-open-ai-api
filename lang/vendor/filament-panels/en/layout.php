@@ -15,7 +15,7 @@ return [
         ],
 
         'open_database_notifications' => [
-            'label' => 'Open notifications',
+            'label' => 'Notifications',
         ],
 
         'open_user_menu' => [
@@ -48,6 +48,23 @@ return [
                 'label' => 'Enable system theme',
             ],
 
+        ],
+
+    ],
+
+    'avatar' => [
+        'alt' => 'Avatar of :name',
+    ],
+
+    'logo' => [
+        'alt' => ':name logo',
+    ],
+
+    'tenant_menu' => [
+
+        'search_field' => [
+            'label' => 'Tenant search',
+            'placeholder' => 'Search',
         ],
 
     ],

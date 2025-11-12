@@ -38,40 +38,6 @@ class GPTEngine
             ->trim('"');
     }
 
-    public function getQuery(string $question): string
-    {
-        $prompt = $this->buildPrompt($question);
-
-        $query = $this->queryOpenAi($prompt, "\n");
-        $query = Str::of($query)
-            ->trim()
-            ->trim('"');
-
-        $this->ensureQueryIsSafe($query);
-
-        info($query);
-
-        return $query;
-    }
-
-    protected function queryOpenAi(string $prompt, string $stop, float $temperature = 0.0)
-    {
-        $completions = $this->client->chat()->create([
-            'model' => 'gpt-4-1106-preview',
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => $prompt,
-                ]
-            ],
-            'temperature' => $temperature,
-            'max_tokens' => 100,
-            'stop' => $stop,
-        ]);
-
-        return $completions->choices[0]->message->content;
-    }
-
     protected function buildPrompt(string $question, string $query = null, string $result = null): string
     {
         $tables = $this->getTables($question);
@@ -87,21 +53,6 @@ class GPTEngine
         return rtrim($prompt, PHP_EOL);
     }
 
-    protected function evaluateQuery(string $query): object
-    {
-        return DB::connection($this->connection)->select($this->getRawQuery($query))[0] ?? new stdClass();
-    }
-
-    protected function getRawQuery(string $query): string
-    {
-        if (version_compare(app()->version(), '10.0', '<')) {
-            /* @phpstan-ignore-next-line */
-            return (string)DB::raw($query);
-        }
-
-        return DB::raw($query)->getValue(DB::connection($this->connection)->getQueryGrammar());
-    }
-
     /**
      * @throws UnsafeQueryException
      */
@@ -114,26 +65,9 @@ class GPTEngine
         throw_if(Str::contains($query, $forbiddenWords), UnsafeQueryException::fromQuery($query));
     }
 
-    protected function getDialect(): string
+    protected function evaluateQuery(string $query): object
     {
-        $databasePlatform = DB::connection($this->connection)->getDoctrineConnection()->getDatabasePlatform();
-
-        return Str::before(class_basename($databasePlatform), 'Platform');
-    }
-
-    protected function getTables(string $question): array
-    {
-        return once(function () use ($question) {
-            $tables = DB::connection($this->connection)
-                ->getDoctrineSchemaManager()
-                ->listTables();
-
-            if (count($tables) < config('ask-database.max_tables_before_performing_lookup')) {
-                return $tables;
-            }
-
-            return $this->filterMatchingTables($question, $tables);
-        });
+        return DB::connection($this->connection)->select($this->getRawQuery($query))[0] ?? new stdClass();
     }
 
     protected function filterMatchingTables(string $question, array $tables): array
@@ -153,5 +87,71 @@ class GPTEngine
         return collect($tables)->filter(function ($table) use ($matchingTables) {
             return $matchingTables->contains(strtolower($table->getName()));
         })->toArray();
+    }
+
+    protected function getDialect(): string
+    {
+        $databasePlatform = DB::connection($this->connection)->getDoctrineConnection()->getDatabasePlatform();
+
+        return Str::before(class_basename($databasePlatform), 'Platform');
+    }
+
+    public function getQuery(string $question): string
+    {
+        $prompt = $this->buildPrompt($question);
+
+        $query = $this->queryOpenAi($prompt, "\n");
+        $query = Str::of($query)
+            ->trim()
+            ->trim('"');
+
+        $this->ensureQueryIsSafe($query);
+
+        info($query);
+
+        return $query;
+    }
+
+    protected function getRawQuery(string $query): string
+    {
+        if (version_compare(app()->version(), '10.0', '<')) {
+            /* @phpstan-ignore-next-line */
+            return (string)DB::raw($query);
+        }
+
+        return DB::raw($query)->getValue(DB::connection($this->connection)->getQueryGrammar());
+    }
+
+    protected function getTables(string $question): array
+    {
+        return once(function () use ($question) {
+            $tables = DB::connection($this->connection)
+                ->getDoctrineSchemaManager()
+                ->listTables();
+
+            if (count($tables) < config('ask-database.max_tables_before_performing_lookup')) {
+                return $tables;
+            }
+
+            return $this->filterMatchingTables($question, $tables);
+        });
+    }
+
+    protected function queryOpenAi(string $prompt, string $stop, float $temperature = 0.0)
+    {
+        $completions = $this->client->chat()->create([
+            'model' => 'gpt-4-1106-preview',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => $prompt,
+                ]
+            ],
+            'temperature' => $temperature,
+            'max_tokens' => 100,
+            'stop' => $stop,
+        ]);
+
+        return $completions->choices[0]->message->content;
     }
 }
